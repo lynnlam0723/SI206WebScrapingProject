@@ -56,7 +56,7 @@ def get_listings_from_search_results(html_file):
         r_vals = reviews_init[i].split(' ')
         reviews = r_vals[1][1:-1]
         id_vals = ids[i].split('_')
-        listing = (names[i], reviews, id_vals[1])
+        listing = (names[i], int(reviews), id_vals[1])
         listings.append(listing)
     return listings
 
@@ -188,9 +188,12 @@ class TestCases(unittest.TestCase):
             self.assertEqual(type(listings[i]), tuple)
 
         # check that the first title, number of reviews, and listing id tuple is correct (open the search results html and find it)
+        self.assertEqual(listings[0][0], "Loft in Mission District")
+        self.assertEqual(listings[0][1], 422)
+        self.assertEqual(listings[0][2], "1944564")
 
         # check that the last title is correct (open the search results html and find it)
-        pass
+        self.assertEqual(listings[17][0], "Guest suite in Mission District")
 
     def test_get_listing_information(self):
         html_list = ["467507",
