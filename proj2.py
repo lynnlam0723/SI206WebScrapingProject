@@ -235,12 +235,13 @@ class TestCases(unittest.TestCase):
             # check that the third element in the tuple is an int
             self.assertEqual(type(listing_information[2]), int)
         # check that the first listing in the html_list has the correct policy number
+        self.assertEqual(listing_informations[0][0], "STR-0005349")
 
         # check that the last listing in the html_list has the correct place type
+        self.assertEqual(listing_informations[4][1], "Entire guesthouse")
 
         # check that the third listing has the correct cost
-
-        pass
+        self.assertEqual(listing_informations[2][2], 165)
 
     def test_get_detailed_listing_database(self):
         # call get_detailed_listing_database on "html_files/search_results.html"
