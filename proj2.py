@@ -5,7 +5,7 @@ import csv
 import unittest
 
 
-# IMPORTANT NOTE:
+# IMPORTANT :
 """
 If you are getting "encoding errors" while trying to open, read, or write from a file, 
 add the following argument to any of your open() functions:
@@ -40,8 +40,25 @@ def get_listings_from_search_results(html_file):
         ('Loft in Mission District', 422, '1944564'),  # example
     ]
     """
-    pass
+    # Open the file and get the file object
+    source_dir = os.path.dirname(__file__) #<-- directory name
+    full_path = os.path.join(source_dir, html_file)
+    infile = open(full_path,'r', encoding='utf-8')
 
+    soup = BeautifulSoup(infile.read(), 'html.parser')
+    listings = list()
+    names = soup.find_all('div', class_='t1jojoys dir dir-ltr')
+    reviews_init = soup.find_all(class_='r1dxllyb dir dir-ltr')
+    ids = soup.find_all('div', 'aria-labelledby')
+    for i in range(len(names)):
+        # if reviews_init[i] == None:
+        #     reviews_init[i] = 0
+        r_vals = reviews_init[i].split(' ')
+        reviews = r_vals[1][1:-1]
+        id_vals = ids[i].split('_')
+        listing = (names[i], reviews, id_vals[1])
+        listings.append(listing)
+    return listings
 
 def get_listing_information(listing_id):
     """
@@ -167,6 +184,8 @@ class TestCases(unittest.TestCase):
         # check that the variable you saved after calling the function is a list
         self.assertEqual(type(listings), list)
         # check that each item in the list is a tuple
+        for i in listings:
+            self.assertEqual(type(listings[i]), tuple)
 
         # check that the first title, number of reviews, and listing id tuple is correct (open the search results html and find it)
 
