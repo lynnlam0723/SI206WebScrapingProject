@@ -123,7 +123,8 @@ def get_detailed_listing_database(html_file):
     listings = get_listings_from_search_results(html_file)
     information = list()
     for listing in listings:
-        information.append(get_listing_information(listing))
+        listing.append(get_listing_information(listing))
+        information.append(listing)
 
 def write_csv(data, filename):
     """
@@ -258,11 +259,13 @@ class TestCases(unittest.TestCase):
 
         # check that the first tuple is made up of the following:
         # 'Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Room', 181
+        tup = ('Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Room', 181)
+        self.assertEqual(detailed_database[0], tup)
 
         # check that the last tuple is made up of the following:
         # 'Guest suite in Mission District', 324, '467507', 'STR-0005349', 'Entire Room', 165
-
-        pass
+        tup2 = ('Guest suite in Mission District', 324, '467507', 'STR-0005349', 'Entire Room', 165)
+        self.assertEqual(detailed_database[17], tup2)
 
     def test_write_csv(self):
         # call get_detailed_listing_database on "html_files/search_results.html"
