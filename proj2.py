@@ -109,7 +109,7 @@ def get_listing_information(listing_id):
 def get_detailed_listing_database(html_file):
     """
     Write a function that calls the above two functions in order to return
-    the complete listing information using the functions you’ve created.
+    the complete listing information using the functions youve created.
     This function takes in a variable representing the location of the search results html file.
     The return value should be in this format:
 
@@ -120,8 +120,10 @@ def get_detailed_listing_database(html_file):
         ...
     ]
     """
-    pass
-
+    listings = get_listings_from_search_results(html_file)
+    information = list()
+    for listing in listings:
+        information.append(get_listing_information(listing))
 
 def write_csv(data, filename):
     """
