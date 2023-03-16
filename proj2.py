@@ -84,8 +84,27 @@ def get_listing_information(listing_id):
         nightly rate
     )
     """
-    pass
+    # Open the file and get the file object
+    file_name = "listing_" + str(listing_id)
+    source_dir = os.path.dirname(__file__) #<-- directory name
+    full_path = os.path.join(source_dir, file_name)
+    infile = open(full_path,'r', encoding='utf-8')
 
+    soup = BeautifulSoup(infile.read(), 'html.parser')
+
+    #get policy class, get policy number
+    policy_init = soup.find(class_='f19phm7j dir dir-ltr')
+    policy = policy_init.find(class_='ll4r2nl dir dir-ltr').text
+
+    #get place class, get only type
+    place_init = soup.find(class_='_14i3z6h')
+    place = re.findall("(.+) hosted", place_init)
+
+    #get rate and take out $
+    rate_init = soup.find(class_='_tyxjp1').text
+    rate = int(rate_init.strip('$'))
+
+    return (policy, place, rate)
 
 def get_detailed_listing_database(html_file):
     """
