@@ -170,8 +170,18 @@ def check_policy_numbers(data):
     ]
 
     """
-    pass
+    non_matches = list()
+    for i in range(data):
+        #policy is index 3
+        #id is index 2
+        #ignore pending and exempt
+        if (data[i][3] == "Pending" or data[i][3] == "Exempt"):
+            continue
 
+        if re.search('20\d{2}-00\d{4}STR') == None or re.search('STR-000\d{4}') == None:
+            #not a match
+            id = data[i][2]
+            non_matches.append(str(id))
 
 def google_scholar_searcher(query):
     """
