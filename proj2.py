@@ -308,11 +308,13 @@ class TestCases(unittest.TestCase):
         # check that the return value is a list
         self.assertEqual(type(invalid_listings), list)
         # check that there is exactly one element in the string
+        self.assertEqual(len(invalid_listings[0]), 1)
 
         # check that the element in the list is a string
+        self.assertEqual(type(invalid_listings[0]), str)
 
         # check that the first element in the list is '16204265'
-        pass
+        self.assertEqual(invalid_listings[0], '16204265')
 
 
 if __name__ == '__main__':
