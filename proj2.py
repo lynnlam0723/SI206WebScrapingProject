@@ -51,8 +51,8 @@ def get_listings_from_search_results(html_file):
     reviews_init = soup.find_all(class_='r1dxllyb dir dir-ltr')
     ids = soup.find_all('div', 'aria-labelledby')
     for i in range(len(names)):
-        # if reviews_init[i] == None:
-        #     reviews_init[i] = 0
+        if reviews_init[i] == None:
+            reviews_init[i] = 0
         r_vals = reviews_init[i].split(' ')
         reviews = r_vals[1][1:-1]
         id_vals = ids[i].split('_')
@@ -148,8 +148,19 @@ def write_csv(data, filename):
 
     This function should not return anything.
     """
-    pass
+    #sort according to cost
+    #cost is index 5
+    new_data = sorted(data, key = lambda x: x[5])
 
+    #write to file
+    wfile = open(filename, 'w')
+    csvOut = csv.writer(wfile)
+    first_row = ("Listing Title", "Number of Reviews", "Listing ID", "Policy Number", "Place Type", "Nightly Rate")
+    csvOut.writerow(first_row)
+
+    #loop through new_data and write
+    for tup in new_data:
+        csvOut.writerow(tup)
 
 def check_policy_numbers(data):
     """
