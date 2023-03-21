@@ -47,16 +47,27 @@ def get_listings_from_search_results(html_file):
 
     soup = BeautifulSoup(infile.read(), 'html.parser')
     listings = list()
+    #get listing names
     names = soup.find_all('div', class_='t1jojoys dir dir-ltr')
+    #get number of reviews
     reviews_init = soup.find_all(class_='r1dxllyb dir dir-ltr')
-    ids = soup.find_all('div', 'aria-labelledby')
+    #get listing ids
+    ids = soup.find_all('div', itemtype='http://schema.org/ListItem')
     for i in range(len(names)):
-        if reviews_init[i] == None:
-            reviews_init[i] = 0
-        r_vals = reviews_init[i].split(' ')
-        reviews = r_vals[1][1:-1]
-        id_vals = ids[i].split('_')
-        listing = (names[i], int(reviews), id_vals[1])
+        # if reviews_init[i] == None:
+        #     reviews_init[i] = 0
+        r_vals = reviews_init[i].text.split()
+        if len(r_vals) == 1:
+            #if len is 1, there are no reviews
+            reviews = 0
+        else:
+            #separate ratings from num reviews and remove parentheses
+            reviews = r_vals[1]
+            reviews = reviews.strip('(').strip(')')
+        id = ids[i].find_all('meta')
+        id_again = id[2].get('content')
+        id_vals = id_again.split('/')
+        listing = (names[i], int(reviews), id_vals[2])
         listings.append(listing)
     return listings
 
@@ -123,7 +134,7 @@ def get_detailed_listing_database(html_file):
     listings = get_listings_from_search_results(html_file)
     information = list()
     for listing in listings:
-        listing.append(get_listing_information(listing))
+        listing = listing + get_listing_information(listing)
         information.append(listing)
 
 def write_csv(data, filename):
