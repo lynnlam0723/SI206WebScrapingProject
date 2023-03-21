@@ -66,8 +66,8 @@ def get_listings_from_search_results(html_file):
             reviews = reviews.strip('(').strip(')')
         id = ids[i].find_all('meta')
         id_again = id[2].get('content')
-        id_vals = id_again.split('/')
-        listing = (names[i], int(reviews), id_vals[2])
+        id_vals = id_again.split('/')[2].split('?')
+        listing = (names[i], int(reviews), id_vals[0])
         listings.append(listing)
     return listings
 
@@ -96,7 +96,7 @@ def get_listing_information(listing_id):
     )
     """
     # Open the file and get the file object
-    file_name = "listing_" + str(listing_id)
+    file_name = "listing_" + str(listing_id[2]) + ".html"
     source_dir = os.path.dirname(__file__) #<-- directory name
     full_path = os.path.join(source_dir, file_name)
     infile = open(full_path,'r', encoding='utf-8')
