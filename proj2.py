@@ -66,8 +66,12 @@ def get_listings_from_search_results(html_file):
             reviews = reviews.strip('(').strip(')')
         id = ids[i].find_all('meta')
         id_again = id[2].get('content')
-        id_vals = id_again.split('/')[2].split('?')
-        listing = (names[i], int(reviews), id_vals[0])
+        id_vals = id_again.split('/')
+        if id_vals[2] == 'plus':
+            id_final = id_vals[3].split('?')
+        else:
+            id_final = id_vals[2].split('?')
+        listing = (names[i].text, int(reviews), id_final[0])
         listings.append(listing)
     return listings
 
@@ -96,7 +100,7 @@ def get_listing_information(listing_id):
     )
     """
     # Open the file and get the file object
-    file_name = "listing_" + str(listing_id[2]) + ".html"
+    file_name = "html_files\listing_" + str(listing_id[2]) + ".html"
     source_dir = os.path.dirname(__file__) #<-- directory name
     full_path = os.path.join(source_dir, file_name)
     infile = open(full_path,'r', encoding='utf-8')
@@ -108,8 +112,9 @@ def get_listing_information(listing_id):
     policy = policy_init.find(class_='ll4r2nl dir dir-ltr').text
 
     #get place class, get only type
-    place_init = soup.find(class_='_14i3z6h')
-    place = re.findall("(.+) hosted", place_init)
+    place_init = soup.find(class_='_14i3z6h').text
+    place_vals = place_init.split()
+    place = place_vals[0] + " " + place_vals[1]
 
     #get rate and take out $
     rate_init = soup.find(class_='_tyxjp1').text
