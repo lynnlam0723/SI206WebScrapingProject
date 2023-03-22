@@ -112,7 +112,8 @@ def get_listing_information(listing_id):
     policy = policy_init.find(class_='ll4r2nl dir dir-ltr').text
 
     #get place class, get only type
-    place_init = soup.find(class_='_14i3z6h').text
+    place_init = soup.find('div', class_='_cv5qq4').text
+    #place_cont = place_init.find(class_='_14i3z6h')
     place_vals = place_init.split()
     place = place_vals[0] + " " + place_vals[1]
 
