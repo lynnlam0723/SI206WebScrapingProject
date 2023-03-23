@@ -110,10 +110,10 @@ def get_listing_information(listing_id):
     #get policy class, get policy number
     policy_init = soup.find(class_='f19phm7j dir dir-ltr')
     policy = policy_init.find(class_='ll4r2nl dir dir-ltr').text
+    policy = re.sub("[^0-9]", "", policy)
 
     #get place class, get only type
     place_init = soup.find('div', class_='_cv5qq4').text
-    #place_cont = place_init.find(class_='_14i3z6h')
     place_vals = place_init.split()
     place = place_vals[0] + " " + place_vals[1]
 
@@ -142,6 +142,7 @@ def get_detailed_listing_database(html_file):
     for listing in listings:
         listing = listing + get_listing_information(listing)
         information.append(listing)
+    return information
 
 def write_csv(data, filename):
     """
@@ -199,17 +200,19 @@ def check_policy_numbers(data):
 
     """
     non_matches = list()
-    for i in range(data):
+    for i in range(len(data)):
         #policy is index 3
         #id is index 2
         #ignore pending and exempt
         if (data[i][3] == "Pending" or data[i][3] == "Exempt"):
             continue
 
-        if re.search('20\d{2}-00\d{4}STR') == None or re.search('STR-000\d{4}') == None:
+        if re.search('20\d{2}-00\d{4}STR', data[i][2]) == None or re.search('STR-000\d{4}', data[i][2]) == None:
             #not a match
             id = data[i][2]
             non_matches.append(str(id))
+
+    return non_matches
 
 def google_scholar_searcher(query):
     """
@@ -245,7 +248,7 @@ class TestCases(unittest.TestCase):
         self.assertEqual(type(listings), list)
         # check that each item in the list is a tuple
         for i in listings:
-            self.assertEqual(type(listings[i]), tuple)
+            self.assertEqual(type(i), tuple)
 
         # check that the first title, number of reviews, and listing id tuple is correct (open the search results html and find it)
         self.assertEqual(listings[0][0], "Loft in Mission District")
@@ -297,7 +300,7 @@ class TestCases(unittest.TestCase):
 
         # check that the first tuple is made up of the following:
         # 'Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Room', 181
-        tup = ('Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Room', 181)
+        tup = ('Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Loft', 181)
         self.assertEqual(detailed_database[0], tup)
 
         # check that the last tuple is made up of the following:
