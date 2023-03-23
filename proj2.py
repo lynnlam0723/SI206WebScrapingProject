@@ -177,7 +177,7 @@ def write_csv(data, filename):
     new_data = sorted(data, key = lambda x: x[5])
 
     #write to file
-    wfile = open(filename, 'w', encoding="utf-8-sig")
+    wfile = open(filename, 'w', newline='', encoding="utf-8")
     csvOut = csv.writer(wfile)
     first_row = ["Listing Title", "Number of Reviews", "Listing ID", "Policy Number", "Place Type", "Nightly Rate"]
     csvOut.writerow(first_row)
@@ -334,11 +334,11 @@ class TestCases(unittest.TestCase):
         self.assertEqual(csv_lines[0], header)
 
         # check that the next row is Private room in Mission District,198,23672181,STR-0002892,Private Room,109
-        next_row = ["Private room in Mission District",198,"23672181","STR-0002892","Private Room",109]
+        next_row = ["Private room in Mission District",'198',"23672181","STR-0002892","Private Room",'109']
         self.assertEqual(csv_lines[1], next_row)
 
         # check that the last row is Guest suite in Mission District,70,50010586,STR-0004717,Entire Room,310
-        last_row = ["Guest suite in Mission District",70,"50010586","STR-0004717","Entire Room",310]
+        last_row = ["Guest suite in Mission District",'70',"50010586","STR-0004717","Entire Room",'310']
         self.assertEqual(csv_lines[18], last_row)
 
     def test_check_policy_numbers(self):
