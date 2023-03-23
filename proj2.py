@@ -43,9 +43,11 @@ def get_listings_from_search_results(html_file):
     # Open the file and get the file object
     source_dir = os.path.dirname(__file__) #<-- directory name
     full_path = os.path.join(source_dir, html_file)
-    infile = open(full_path,'r', encoding='utf-8')
+    infile = open(full_path,'r', encoding='utf-8-sig')
 
     soup = BeautifulSoup(infile.read(), 'html.parser')
+    infile.close()
+
     listings = list()
     #get listing names
     names = soup.find_all('div', class_='t1jojoys dir dir-ltr')
@@ -100,22 +102,26 @@ def get_listing_information(listing_id):
     )
     """
     # Open the file and get the file object
-    file_name = "html_files\listing_" + str(listing_id[2]) + ".html"
+    file_name = "html_files\listing_" + str(listing_id) + ".html"
     source_dir = os.path.dirname(__file__) #<-- directory name
     full_path = os.path.join(source_dir, file_name)
-    infile = open(full_path,'r', encoding='utf-8')
+    infile = open(full_path,'r', encoding='utf-8-sig')
 
     soup = BeautifulSoup(infile.read(), 'html.parser')
+    infile.close()
 
     #get policy class, get policy number
     policy_init = soup.find(class_='f19phm7j dir dir-ltr')
     policy = policy_init.find(class_='ll4r2nl dir dir-ltr').text
-    policy = re.sub("[^0-9]", "", policy)
 
     #get place class, get only type
     place_init = soup.find('div', class_='_cv5qq4').text
-    place_vals = place_init.split()
-    place = place_vals[0] + " " + place_vals[1]
+    if 'Private' in place_init :
+        place = 'Private Room'
+    elif 'Shared' in place_init:
+        place = 'Shared Room'
+    else:
+        place = 'Entire Room'
 
     #get rate and take out $
     rate_init = soup.find(class_='_tyxjp1').text
@@ -140,7 +146,7 @@ def get_detailed_listing_database(html_file):
     listings = get_listings_from_search_results(html_file)
     information = list()
     for listing in listings:
-        listing = listing + get_listing_information(listing)
+        listing = listing + get_listing_information(listing[2])
         information.append(listing)
     return information
 
@@ -171,14 +177,15 @@ def write_csv(data, filename):
     new_data = sorted(data, key = lambda x: x[5])
 
     #write to file
-    wfile = open(filename, 'w')
+    wfile = open(filename, 'w', encoding="utf-8-sig")
     csvOut = csv.writer(wfile)
-    first_row = ("Listing Title", "Number of Reviews", "Listing ID", "Policy Number", "Place Type", "Nightly Rate")
+    first_row = ["Listing Title", "Number of Reviews", "Listing ID", "Policy Number", "Place Type", "Nightly Rate"]
     csvOut.writerow(first_row)
 
     #loop through new_data and write
     for tup in new_data:
         csvOut.writerow(tup)
+    wfile.close()
 
 def check_policy_numbers(data):
     """
@@ -204,10 +211,10 @@ def check_policy_numbers(data):
         #policy is index 3
         #id is index 2
         #ignore pending and exempt
-        if (data[i][3] == "Pending" or data[i][3] == "Exempt"):
+        if (data[i][3] == "pending" or data[i][3] == "exempt"):
             continue
 
-        if re.search('20\d{2}-00\d{4}STR', data[i][2]) == None or re.search('STR-000\d{4}', data[i][2]) == None:
+        if re.search('20\d{2}-00\d{4}STR', data[i][3]) == None and re.search('STR-000\d{4}', data[i][3]) == None:
             #not a match
             id = data[i][2]
             non_matches.append(str(id))
@@ -282,7 +289,7 @@ class TestCases(unittest.TestCase):
         self.assertEqual(listing_informations[0][0], "STR-0005349")
 
         # check that the last listing in the html_list has the correct place type
-        self.assertEqual(listing_informations[4][1], "Entire guesthouse")
+        self.assertEqual(listing_informations[4][1], "Entire Room")
 
         # check that the third listing has the correct cost
         self.assertEqual(listing_informations[2][2], 165)
@@ -300,7 +307,7 @@ class TestCases(unittest.TestCase):
 
         # check that the first tuple is made up of the following:
         # 'Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Room', 181
-        tup = ('Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Loft', 181)
+        tup = ('Loft in Mission District', 422, '1944564', '2022-004088STR', 'Entire Room', 181)
         self.assertEqual(detailed_database[0], tup)
 
         # check that the last tuple is made up of the following:
@@ -343,7 +350,7 @@ class TestCases(unittest.TestCase):
         # check that the return value is a list
         self.assertEqual(type(invalid_listings), list)
         # check that there is exactly one element in the string
-        self.assertEqual(len(invalid_listings[0]), 1)
+        self.assertEqual(len(invalid_listings), 1)
 
         # check that the element in the list is a string
         self.assertEqual(type(invalid_listings[0]), str)
